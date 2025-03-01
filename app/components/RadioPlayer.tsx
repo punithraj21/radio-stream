@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { RadioBrowserApi } from "radio-browser-api";
 
 function RadioPlayer() {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -12,7 +11,6 @@ function RadioPlayer() {
   const [favorites, setFavorites] = useState<any[]>([]);
   const [loadLimit, setLoadLimit] = useState<number>(10);
   const [sortBy, setSortBy] = useState<string>("name");
-  console.log("sortBy: ", sortBy);
 
   useEffect(() => {
     const fetchStations = async () => {
@@ -82,7 +80,7 @@ function RadioPlayer() {
   };
 
   const handlePlay = (station: any) => {
-    if (playingStation && station.id === playingStation.id) {
+    if (playingStation && station.stationuuid === playingStation.stationuuid) {
       if (audio) {
         if (isPlaying) {
           audio.pause();
@@ -100,7 +98,7 @@ function RadioPlayer() {
       audio.src = "";
     }
 
-    const newAudio = new Audio(station.urlResolved);
+    const newAudio = new Audio(station.url_resolved);
     newAudio.crossOrigin = "anonymous";
     setAudio(newAudio);
     setPlayingStation(station);
@@ -120,9 +118,9 @@ function RadioPlayer() {
   };
 
   const isStationFavorite = (station: any) => {
-    const favoritess = favorites.some((fav) => fav.id === station.id);
+    const favoritess = favorites.some((fav) => fav.stationuuid === station.stationuuid);
     console.log("favoritess: ", favoritess);
-    return favorites.some((fav) => fav.id === station.id);
+    return favorites.some((fav) => fav.stationuuid === station.stationuuid);
   };
 
   const saveToFavorites = (station: any) => {
@@ -130,7 +128,9 @@ function RadioPlayer() {
     if (isStationFavorite(station)) {
       removeFromFavorites(station);
     } else {
-      const updatedFavorites = [...favorites, station].filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i);
+      const updatedFavorites = [...favorites, station].filter(
+        (v, i, a) => a.findIndex((t) => t.stationuuid === v.stationuuid) === i
+      );
       setFavorites(updatedFavorites);
       localStorage.setItem("favoriteStations", JSON.stringify(updatedFavorites));
     }
@@ -138,7 +138,7 @@ function RadioPlayer() {
 
   const removeFromFavorites = (station: any) => {
     console.log("favorites: ", favorites);
-    const updatedFavorites = favorites.filter((fav) => fav.id !== station.id);
+    const updatedFavorites = favorites.filter((fav) => fav.stationuuid !== station.stationuuid);
     setFavorites(updatedFavorites);
     localStorage.setItem("favoriteStations", JSON.stringify(updatedFavorites));
   };
@@ -275,7 +275,10 @@ function RadioPlayer() {
                 </h2>
                 <ul className="space-y-3">
                   {favorites.map((station) => (
-                    <li key={station.id} className="bg-white/5 hover:bg-white/10 transition rounded-lg overflow-hidden">
+                    <li
+                      key={station.stationuuid}
+                      className="bg-white/5 hover:bg-white/10 transition rounded-lg overflow-hidden"
+                    >
                       <div className="flex items-center justify-between p-3">
                         <div className="flex items-center">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 flex items-center justify-center mr-3">
@@ -298,14 +301,14 @@ function RadioPlayer() {
                           <button
                             onClick={() => handlePlay(station)}
                             className={`p-2 rounded-full transition ${
-                              playingStation && playingStation.id === station.id
+                              playingStation && playingStation.stationuuid === station.stationuuid
                                 ? isPlaying
                                   ? "bg-red-500 hover:bg-red-600"
                                   : "bg-green-500 hover:bg-green-600"
                                 : "bg-teal-500 hover:bg-teal-600"
                             }`}
                           >
-                            {playingStation && playingStation.id === station.id ? (
+                            {playingStation && playingStation.stationuuid === station.stationuuid ? (
                               isPlaying ? (
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -402,11 +405,11 @@ function RadioPlayer() {
                       // Get individual favorite status for this specific station
                       const isFavorite = isStationFavorite(station);
                       // Get individual playing status for this specific station
-                      const isThisStationPlaying = playingStation && playingStation.id === station.id;
+                      const isThisStationPlaying = playingStation && playingStation.stationuuid === station.stationuuid;
 
                       return (
                         <div
-                          key={station.id}
+                          key={station.stationuuid}
                           className="bg-white/5 hover:bg-white/10 transition rounded-lg overflow-hidden"
                         >
                           <div className="p-4">
