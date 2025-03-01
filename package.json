@@ -10,8 +10,6 @@
   },
   "dependencies": {
     "next": "15.2.0",
-    "radio-browser": "^2.2.3",
-    "radio-browser-api": "^6.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
